@@ -18,24 +18,25 @@ import os
 def run(url):
     #goal: take the URL to be searched on indeed and return the BS4 format
     #url = http://www.indeed.com/jobs?q=data+scientist&l=NYC,+NY&rbl=New+York,+NY&jlid=45f6c4ded55c00bf&jt=fulltime&explvl=entry_level
-
-    pageNum=1 #try 1 page for now
-    for p in range(1,pageNum+1): # for each page
+    
+    totalAds = 500
+    for p in range(0,totalAds,10): # 10 ads per page for each page
         html=None
         if p==1:
             pageLink=url # url for page 1
-        else: pageLink=url+'?page='+str(p)+'&sort=' # make the page url
+        else: pageLink=url+'&start='+str(p) # make the page url
         for i in range(5): # try 5 times
             try:
-                #use the browser to access the url
+                #use the browser to access the url 
                 response=requests.get(pageLink,headers = { 'User-Agent':'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36', })
                 html=response.content # get the html break # we got the file, break the loop
             except Exception as e:# browser.open() threw an exception, the attempt to get the response failed
-                print 'failed attempt',i
+                print 'failed attempt',i 
                 time.sleep(2) # wait 2 secs
             if not html:
-                continue # couldnt get the page, ignore
-            soup = BeautifulSoup(html, "lxml") # parse the html
+                continue # couldnt get the page, ignore 
+            soup = BeautifulSoup(html, "lxml") # parse the html 
+            #totalAds=soup.find("meta", {"name":"description"})['content'][0:3] Get the Total Ads
     return soup
 
 
