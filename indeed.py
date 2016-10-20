@@ -45,8 +45,17 @@ def jobAd(soup):
     #goal: take the SOUP format from function run and make a dict for each Job,
     #where the key is the url & the value is the Job Title
     jobNameURLs = {}
-
-
+    #critic='NA'
+    targetElements = soup.findAll('div', attrs={'class' : 'row result'})
+    for elem in targetElements:
+        print elem
+        job_title = elem.find('a', attrs={'class':'turnstileLink'}).attrs['title']
+        home_url = "http://www.indeed.com"
+        job_link = "%s%s" % (home_url,elem.find('a').get('href'))
+        #print job_title
+        #print job_link
+        jobNameURLs[job_link] = job_title
+        #print jobNameURLs
     return jobNameURLs
 
 
@@ -71,13 +80,16 @@ def makeFolder(jobNameURL, webpage):
 # In[17]:
 
 if __name__ == "__main__":
-    url = 'http://www.indeed.com/jobs?q=data+scientist&l=NYC,+NY&rbl=New+York,+NY&jlid=45f6c4ded55c00bf&jt=fulltime&explvl=entry_level'
+    url = 'http://www.indeed.com/jobs?q=data+scientist&l=NYC,+NY&rbl=New+York,+NY&jlid=45f6c4ded55c00bf&jt=fulltime&explvl=entry_level&start=00&pp='
 
     soup = run(url)
     jobNameURLS = jobAd(soup) #DICT of all the job URLS and job Names
 
-    os.makedirs("\DSNYCFTEL")
-    os.chdir("\DSNYCFTEL") #change the directory so any new folders are made into DSNYCFTEL
+    if not os.path.exists("DSNYCFTEL"):
+        os.makedirs("DSNYCFTEL")
+
+    #os.makedirs("DSNYCFTEL")
+    #os.chdir("DSNYCFTEL") #change the directory so any new folders are made into DSNYCFTEL
 
     for jobNameURL in jobNameURLS: #for each URL in the dict
         webpage = jobDescription(jobNameURL) #obtain the webpage
