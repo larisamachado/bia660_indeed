@@ -25,6 +25,7 @@ def run(url):
         if p==1:
             pageLink=url # url for page 1
         else: pageLink=url+'?page='+str(p)+'&sort=' # make the page url
+        #print pageLink
         for i in range(5): # try 5 times
             try:
                 #use the browser to access the url
@@ -35,7 +36,9 @@ def run(url):
                 time.sleep(2) # wait 2 secs
             if not html:
                 continue # couldnt get the page, ignore
+            #print html
             soup = BeautifulSoup(html, "lxml") # parse the html
+            #print soup
     return soup
 
 
@@ -48,13 +51,13 @@ def jobAd(soup):
     #critic='NA'
     targetElements = soup.findAll('div', attrs={'class' : 'row result'})
     for elem in targetElements:
-        print elem
+        #print elem
         job_title = elem.find('a', attrs={'class':'turnstileLink'}).attrs['title']
         home_url = "http://www.indeed.com"
         job_link = "%s%s" % (home_url,elem.find('a').get('href'))
         #print job_title
         #print job_link
-        jobNameURLs[job_link] = job_title
+        #jobNameURLs[job_link] = job_title
         #print jobNameURLs
     return jobNameURLs
 
@@ -76,7 +79,7 @@ def jobDescription(jobNameURL):
         if not webpage:
             continue # couldnt get the page, ignore
 
-    
+
     return webpage
 
 
@@ -84,7 +87,15 @@ def jobDescription(jobNameURL):
 
 def makeFolder(jobNameURL, webpage):
     #goal: Make a folder with a title of JobName from the Dict, and paste the webpage in there
+    soup = run(jobNameURL)
+    joblists=soup.findAll('a', {'div':re.compile('class="sjcl"')}) # get all the review divs
 
+    for joblist in joblists:
+        job='NA'
+        jobChunk=joblist.find('a',{'data-tn-element':'companyName'})
+        if jobChunk: job=jobChunk.text.encode('ascii','ignore')
+        filename=job+".txt"
+    fw=open(filename,'w')
 
     return "success"
 
@@ -92,7 +103,7 @@ def makeFolder(jobNameURL, webpage):
 # In[17]:
 
 if __name__ == "__main__":
-    url = 'http://www.indeed.com/jobs?q=data+scientist&l=NYC,+NY&rbl=New+York,+NY&jlid=45f6c4ded55c00bf&jt=fulltime&explvl=entry_level&start=00&pp='
+    url = 'http://www.indeed.com/jobs?q=data+scientist&l=NYC,+NY&rbl=New+York,+NY&jlid=45f6c4ded55c00bf&jt=fulltime&explvl=entry_level'
 
     soup = run(url)
     jobNameURLS = jobAd(soup) #DICT of all the job URLS and job Names
