@@ -64,7 +64,19 @@ def jobAd(soup):
 def jobDescription(jobNameURL):
     #goal: take just 1 URL from the dict from function JobAd,
     #and download the webpage with the job description from the hyperlink
+    for i in range(5):
+        try:
+            #use the browser to access the url
+            response=requests.get(jobNameURL,headers = { 'User-Agent':'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36', })
+            webpage=response.content
+            break # get the html break # we got the file, break the loop
+        except Exception as e:# browser.open() threw an exception, the attempt to get the response failed
+            print 'Getttin Job description failed, attempt',i
+            time.sleep(2) # wait 2 secs
+        if not webpage:
+            continue # couldnt get the page, ignore
 
+    
     return webpage
 
 
